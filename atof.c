@@ -21,104 +21,72 @@
 #include <string.h>
 #include <stdbool.h>
 
-float Atof(const char *str)
+double Atof(const char *str)
 {
-	float res = 0;
+	double res = 0;
 	int decimalCnt = 0;
 	bool decimalPt = false;
 	int sign = 1;
-	bool negative = false;  
+	int i = 0;
 
-	/* Check for negative value */
-	char *ptr = (char *)str;
-	while (*ptr) {
-		if (*ptr == '-') {
-			/* Check for number value in the next character */
-			ptr++;
-			if (*ptr >= '0' && *ptr <= '9') {
-				sign = -1;
-				negative = true;
-				break;
-			} else {
-				break;
-			}
-		}
-		ptr++;
+	/* If space occurs, move to the next character */
+	while (str[i] == ' ') {
+		i++;
 	}
 
-	while (*str) {
+	/* Check for + and - sign */
+	if (str[i] == '-' || str[i] == '+') {
+		sign = 1 - 2 * (str[i] == '-');
+		i++;
+	}
+
+	/* Storing result for number characters */
+	while ((str[i] >= '0' && str[i] <= '9') || str[i] == '.') {
 		/* Check for decimal point */
-		if (*str == '.') {
+		if (str[i] == '.') {
 			decimalPt = true;
-			str++;
+			i++;
 		}
-		
-		/* Check for number value */
-		if (*str >= '0' && *str <= '9') {
-			/* Start counter if decimal point is true */
-			if (decimalPt == true) {
-				decimalCnt++; 
-			}
-			res = (res * 10) + (*str - '0');
-			str++;
 
-		/* If spaces, move on to the next character */	
-		} else if (*str == ' ') {
-			str++;
+		if (decimalPt)
+			decimalCnt++;
 
-		/* If negative sign */
-		} else if (*str == '-') {
-			if (negative)
-				str++;
-			else
-				return res; // return 0
-
-		} else {
-			return res * sign;
-		}
+		res = res * 10 + (str[i] - '0');
+		i++;
 	}
-	
+
 	/* Divide result by 10 based on counter */
-	if (decimalPt == true) {
-		int i;
+	if (decimalPt) {
 		for (i = 0; i < decimalCnt; i++) {
 			res = res / 10;
 		}
 	}
+	return res * sign; 
+}
 
-	return res * sign;
+bool testCases(const char *str)
+{
+	if (atof(str) == Atof(str))
+		return true;
+	else 
+		return false;
+	
 }
 
 int main(void)
 {
-	char *str1 = "123.45";
-	char *str2 = "      123.45";
-	char *str3 = "decimal 123.45";
-	char *str4 = "-123.45";
-	char *str5 = "       -123.45";
-	char *str6 = "   -    123.45";
+	const char *str[10] = {"123.45", "  123.45", "decimal 123.45", "123.45 decimal", "-123.45", "- 123.45", "+123.45", "+-123.45", "-+123.45", ".12"};
 
-	printf("Actual atof results: \n");
+	int test_case = 0;
+	int count = sizeof(str) / sizeof(str[0]);
 
-	float res1 = atof(str1);
-	float res2 = atof(str2);
-	float res3 = atof(str3);
-	float res4 = atof(str4);
-	float res5 = atof(str5);
-	float res6 = atof(str6);
-
-	printf("%f\n%f\n%f\n%f\n%f\n%f\n", res1, res2, res3, res4, res5, res6);
-
-	printf("\nMy atof implementation results: \n");
-	
-	res1 = Atof(str1);
-	res2 = Atof(str2);
-	res3 = Atof(str3);
-	res4 = Atof(str4);
-	res5 = Atof(str5);
-	res6 = Atof(str6);
-	
-	printf("%f\n%f\n%f\n%f\n%f\n%f\n", res1, res2, res3, res4, res5, res6);
+	while (test_case < count) {
+		printf("Running test case %d:'%s'\n", test_case, str[test_case]);
+		testCases(str[test_case]) ? puts("PASSED!") : puts("FAILED :(");
+		puts("\r");
+		test_case++;
+	}
 
 	return 0;
 }
+
