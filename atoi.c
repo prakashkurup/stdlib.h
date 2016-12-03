@@ -24,84 +24,53 @@
 /* Function to implement atoi */
 int Atoi(const char *str)
 {
-	int res = 0;
 	int sign = 1;
-	bool negative = false;
+	int res = 0;
+	int i = 0;
 
-	/* Check for negative sign */
-	char *ptr = (char *)str;
-	while (*ptr) {
-		if (*ptr == '-') {
-			/* Check for a number after negative sign */
-			ptr++;
-			if (*ptr >= '0' && *ptr <= '9') {
-				sign = -1;
-				negative = true;
-				break;
-			} else {
-				break;
-			}
-		}
-		ptr++;
+	/* If space occurs, move to the next char */
+	while (str[i] == ' ') {
+		i++;
 	}
 
-	while (*str) {
-		/* If character is a number between 0 to 9 */
-		if (*str >= '0' && *str <= '9') {
-			/* Stores the result as integer */
-			res = (res * 10) + (*str - '0');
-			str++;
-
-		/* If there are spaces, move on to the next */	
-		} else if (*str == ' ') {
-			str++;
-
-		/* If negative sign occurred */
-		} else if (*str == '-') {
-			/* check if negative value */
-			if (negative)
-				str++;
-			else
-				return res; // return 0
-
-		} else {
-			return res * sign; 
-		}
+	/* Check for + and - sign*/
+	if (str[i] == '-' || str[i] == '+') {
+		sign = 1 - 2 * (str[i] == '-');
+		i++;
 	}
 
-	return res * sign;
+	/* Store res for number characters */
+	while (str[i] >= '0' && str[i] <= '9') {
+		res = res * 10 + (str[i++] - '0');
+	}
+
+ 	return res * sign;
+}
+
+/* Function to check test cases */
+bool testCases(const char *str)
+{
+	if (atoi(str) == Atoi(str)) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 int main(void)
 {
-	char *str1 = "12345";
-	char *str2 = "      12345 number";
-	char *str3 = "number 12345";
-	char *str4 = "-12345";
-	char *str5 = "      -12345 number";
-	char *str6 = "  -  12345";
+	int test_case = 0;
 
-	printf("Actual atoi results: \n");
+	const char *str[10] = {"12345", "  12345", "number 12345", "12345 number", "-12345", "- 12345", "+-12345", "-+12345", "12 345", "+12345"};
+	int count = sizeof(str) / sizeof(str[0]);
 
-	int res1 = atoi(str1);
-	int res2 = atoi(str2);
-	int res3 = atoi(str3);
-	int res4 = atoi(str4);
-	int res5 = atoi(str5);
-	int res6 = atoi(str6);
-
-	printf("%d\n%d\n%d\n%d\n%d\n%d\n", res1, res2, res3, res4, res5, res6);
-
-	printf("\nMy atoi implementation results: \n");
-
-	res1 = Atoi(str1);
-	res2 = Atoi(str2);
-	res3 = Atoi(str3);
-	res4 = Atoi(str4);
-	res5 = Atoi(str5);
-	res6 = Atoi(str6);
-
-	printf("%d\n%d\n%d\n%d\n%d\n%d\n", res1, res2, res3, res4, res5, res6);
-	
+	while (test_case < count) {
+		printf("Running test case %d:'%s'\n", test_case, str[test_case]);
+		testCases(str[test_case]) ? puts("PASSED!") : puts("FAILED :(");
+		puts("\r");
+		test_case++;
+	}
+		
 	return 0;
 }
+
